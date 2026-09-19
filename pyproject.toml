@@ -7,3 +7,26 @@ requires-python = ">=3.14"
 dependencies = [
     "torch>=2.14.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.6.2",
+    "ruff>=0.16.8",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E4", "E7", "E9",  # Basic syntax and style errors
+    "F",               # Unused imports and undefined names
+    "I",               # Import sorting
+    "UP",              # Modern Python syntax
+    "B",               # Common bug patterns
+    "SIM",             # Simplification suggestions
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

@@ -1,0 +1,36 @@
+# pre-commitのグローバル設定
+# fail_fast: true # 1つのフックが失敗したら、後続のフックを実行せずに終了する
+default_language_version:
+  python: python3.14
+
+default_stages: [pre-commit, pre-push]
+
+repos:
+  # 汎用的なチェックを行うフック群
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # Ruffの公式フック
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruffのバージョンを固定することが推奨される
+    rev: v0.16.8 # 最新版は `ruff --version` で確認
+    hooks:
+      # 1. Linter（自動修正を有効化）
+      - id: ruff-check
+        # --fixオプションで自動修正を試みる
+        args: [--fix, --exit-non-zero-on-fix]
+      # 2. Formatter
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v2.3.1
+    hooks:
+      - id: mypy
+        types_or: [ python, pyi ]
+        stages: [pre-push]
+        args: [--strict]

@@ -2,6 +2,7 @@ import torch
 
 from attention.scaled_dot_product import ScaledDotProductAttention
 
+
 class MultiHeadAttention(torch.nn.Module):
     def __init__(self, d_model, num_heads, d_k=None, d_v=None, dropout=0.1) -> None:
         super().__init__()

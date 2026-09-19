@@ -17,11 +17,11 @@ class DecoderBlock(torch.nn.Module):
         self.layer_norm_3 = LayerNorm(d_model)
 
     def forward(self, x, encoder_output, custom_mask=None):
-        x += self.mha_1(x, x, x, causal=True)
+        x = x + self.mha_1(x, x, x, causal=True)
         x = self.layer_norm_1(x)
-        x += self.mha_2(encoder_output, encoder_output, x, custom_mask=custom_mask)
+        x = x + self.mha_2(x, encoder_output, encoder_output, custom_mask=custom_mask)
         x = self.layer_norm_2(x)
-        x += self.feed_forward(x)
+        x = x + self.feed_forward(x)
         return self.layer_norm_3(x)
 
 

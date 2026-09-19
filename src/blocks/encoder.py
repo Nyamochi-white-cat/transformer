@@ -15,9 +15,9 @@ class EncoderBlock(torch.nn.Module):
         self.feed_forward = FeedForward(d_model, d_ff)
 
     def forward(self, x: torch.Tensor):
-        x += self.mha(x, x, x)
+        x = x + self.mha(x, x, x)
         x = self.layer_norm_1(x)
-        x += self.feed_forward(x)
+        x = x + self.feed_forward(x)
         return self.layer_norm_2(x)
 
 

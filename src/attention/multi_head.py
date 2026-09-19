@@ -17,12 +17,12 @@ class MultiHeadAttention(torch.nn.Module):
         self.attention = ScaledDotProductAttention(dropout)
         self.fc = torch.nn.Linear(num_heads * self.d_v, d_model)
 
-    def forward(self, query, key, value, mask=None) -> torch.Tensor:
+    def forward(self, query, key, value, custom_mask=None, causal=False) -> torch.Tensor:
         batch_size = query.size(0)
         query = self.w_q(query).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
         key = self.w_k(key).view(batch_size, -1, self.num_heads, self.d_k).transpose(1, 2)
         value = self.w_v(value).view(batch_size, -1, self.num_heads, self.d_v).transpose(1, 2)
-        output = self.attention(query, key, value, mask)
+        output = self.attention(query, key, value, custom_mask, causal)
         output = output.transpose(1, 2).contiguous().view(batch_size, -1, self.num_heads * self.d_v)
         output = self.fc(output)
         return output

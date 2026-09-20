@@ -1,3 +1,5 @@
+import math
+
 import torch
 
 from attention.masks import causal_mask, combine_masks
@@ -13,9 +15,7 @@ class ScaledDotProductAttention(torch.nn.Module):
         d_k = query.size(-1)
         if d_k != key.size(-1):
             raise ValueError("Query and key must have the same dimension")
-        weight = torch.matmul(query, key.transpose(-2, -1)) / torch.sqrt(
-            torch.tensor(d_k, dtype=torch.float32)
-        )
+        weight = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(d_k)
         masks = []
         if causal:
             masks.append(causal_mask(weight.size(-1)).to(weight.device))
@@ -23,7 +23,7 @@ class ScaledDotProductAttention(torch.nn.Module):
             masks.append(custom_mask)
         if masks:
             combined_mask = combine_masks(*masks)
-            weight = weight.masked_fill(combined_mask == 0, float("-inf"))
+            weight = weight.masked_fill(~combined_mask, float("-inf"))
         weight = self.softmax(weight)
         weight = self.dropout(weight)
         assert value.size(-2) == weight.size(-1), (

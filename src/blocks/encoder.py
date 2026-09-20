@@ -3,7 +3,6 @@ import torch
 from attention.multi_head import MultiHeadAttention
 from layers.feed_forward import FeedForward
 from layers.normalization import LayerNorm
-from layers.positional import positional_encoding
 
 
 class EncoderBlock(torch.nn.Module):
@@ -21,15 +20,14 @@ class EncoderBlock(torch.nn.Module):
         return self.layer_norm_2(x)
 
 
-class Encoder(torch.nn.Module):
-    def __init__(self, num_layers=6, d_model=512, head_num=8, d_ff=2048, max_seq_len=512):
+class EncoderStack(torch.nn.Module):
+    def __init__(self, num_layers=6, d_model=512, head_num=8, d_ff=2048):
         super().__init__()
         self.layers = torch.nn.ModuleList(
             [EncoderBlock(d_model, head_num, d_ff) for _ in range(num_layers)]
         )
 
     def forward(self, x: torch.Tensor):
-        x += positional_encoding(x.size(1), x.size(2)).to(x.device)
         for layer in self.layers:
             x = layer(x)
         return x

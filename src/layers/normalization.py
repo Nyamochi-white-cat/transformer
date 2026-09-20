@@ -5,10 +5,10 @@ class LayerNorm(torch.nn.Module):
     def __init__(self, d_model, eps=1e-5):
         super().__init__()
         self.eps = eps
-        self.gamma = torch.ones(d_model, requires_grad=True)
-        self.beta = torch.zeros(d_model, requires_grad=True)
+        self.gamma = torch.nn.Parameter(torch.ones(d_model))
+        self.beta = torch.nn.Parameter(torch.zeros(d_model))
 
     def forward(self, x: torch.Tensor, dim=-1):
-        mu = x.mean(dim)
-        sigma = torch.sqrt(x.var(dim) + self.eps)
-        return torch.matmul(self.gamma, (x - mu) / sigma) + self.beta
+        mu = x.mean(dim, keepdim=True)
+        sigma = torch.sqrt(x.var(dim, keepdim=True) + self.eps)
+        return torch.mul(self.gamma, (x - mu) / sigma) + self.beta

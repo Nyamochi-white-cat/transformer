@@ -10,6 +10,8 @@ class MultiHeadAttention(torch.nn.Module):
         self.d_model = d_model
         self.d_k = d_k if d_k is not None else d_model // num_heads
         self.d_v = d_v if d_v is not None else d_model // num_heads
+        if d_k is None and d_v is None and d_model % num_heads != 0:
+            raise ValueError("d_model must be divisible by num_heads")
 
         self.w_q = torch.nn.Linear(d_model, num_heads * self.d_k)
         self.w_k = torch.nn.Linear(d_model, num_heads * self.d_k)
